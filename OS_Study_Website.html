@@ -1,0 +1,2220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OS Exam Notes — Interactive Study Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0c0e14;
+  --bg2: #111420;
+  --bg3: #161b2e;
+  --card: #141828;
+  --card2: #1a2035;
+  --border: #252d45;
+  --border2: #2e3a58;
+  --accent: #4f8ef7;
+  --accent2: #7c3aed;
+  --accent3: #06b6d4;
+  --green: #10b981;
+  --yellow: #f59e0b;
+  --red: #ef4444;
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --text3: #64748b;
+  --formula: #0f2744;
+  --formula-border: #1e4080;
+  --mono: 'Space Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+  --display: 'Syne', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* ─── NOISE OVERLAY ─── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 9999; opacity: 0.4;
+}
+
+/* ─── LAYOUT ─── */
+.shell {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+}
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  position: sticky; top: 0; height: 100vh;
+  overflow-y: auto;
+  display: flex; flex-direction: column;
+  z-index: 100;
+}
+
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.logo-area {
+  padding: 24px 20px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo-area .tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--accent);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.logo-area h1 {
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.search-box {
+  margin: 12px 16px;
+  position: relative;
+}
+
+.search-box input {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px 8px 34px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.search-box input:focus { border-color: var(--accent); }
+.search-box input::placeholder { color: var(--text3); }
+
+.search-box .si {
+  position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+  color: var(--text3); font-size: 14px; pointer-events: none;
+}
+
+.nav-section {
+  padding: 8px 0;
+}
+
+.nav-section-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding: 8px 20px 4px;
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 20px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 13px;
+  color: var(--text2);
+  border-left: 2px solid transparent;
+  text-decoration: none;
+}
+
+.nav-item:hover {
+  color: var(--text);
+  background: rgba(79,142,247,0.06);
+  border-left-color: var(--accent);
+}
+
+.nav-item.active {
+  color: var(--accent);
+  background: rgba(79,142,247,0.1);
+  border-left-color: var(--accent);
+  font-weight: 500;
+}
+
+.nav-item .num {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  min-width: 16px;
+}
+
+.nav-item.active .num { color: var(--accent); }
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.mode-toggles {
+  display: flex; gap: 8px;
+}
+
+.mode-btn {
+  flex: 1;
+  padding: 7px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: 10px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.2s;
+}
+
+.mode-btn:hover { border-color: var(--accent); color: var(--accent); }
+.mode-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+/* ─── MAIN CONTENT ─── */
+.main {
+  overflow-y: auto;
+  height: 100vh;
+}
+
+.main::-webkit-scrollbar { width: 6px; }
+.main::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+/* ─── HERO ─── */
+.hero {
+  background: linear-gradient(135deg, var(--bg2) 0%, #0d1426 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 48px 48px 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::after {
+  content: '';
+  position: absolute; top: -60px; right: -60px;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(79,142,247,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero .breadcrumb {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+}
+
+.hero h2 {
+  font-family: var(--display);
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero p {
+  color: var(--text2);
+  font-size: 15px;
+  max-width: 560px;
+  margin-bottom: 24px;
+}
+
+.hero-chips {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+
+.chip {
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border2);
+  background: var(--card);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.chip:hover, .chip.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(79,142,247,0.1);
+}
+
+/* ─── CONTENT AREA ─── */
+.content {
+  padding: 0;
+}
+
+/* ─── SECTION ─── */
+.topic-section {
+  border-bottom: 1px solid var(--border);
+  display: none;
+}
+.topic-section.visible { display: block; }
+
+.section-header {
+  padding: 28px 48px 0;
+  margin-bottom: 8px;
+}
+
+.section-header .sec-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+
+.section-header h3 {
+  font-family: var(--display);
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.section-body { padding: 16px 48px 40px; }
+
+/* ─── CARDS ─── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  transition: border-color 0.2s;
+}
+
+.card:hover { border-color: var(--border2); }
+
+.card-title {
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.card-title .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent); flex-shrink: 0;
+}
+
+.card-title .dot.green { background: var(--green); }
+.card-title .dot.yellow { background: var(--yellow); }
+.card-title .dot.red { background: var(--red); }
+.card-title .dot.purple { background: var(--accent2); }
+.card-title .dot.cyan { background: var(--accent3); }
+
+/* ─── GRID ─── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+
+/* ─── FORMULA BOX ─── */
+.formula {
+  background: var(--formula);
+  border: 1px solid var(--formula-border);
+  border-radius: 8px;
+  padding: 12px 18px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: #93c5fd;
+  margin: 10px 0;
+  line-height: 1.6;
+  position: relative;
+}
+
+.formula::before {
+  content: 'FORMULA';
+  position: absolute; top: -8px; left: 14px;
+  font-size: 9px; letter-spacing: 2px;
+  background: var(--formula-border);
+  color: #60a5fa; padding: 0 6px; border-radius: 3px;
+}
+
+/* ─── TABLE ─── */
+.t-wrap { overflow-x: auto; margin: 12px 0; }
+
+table {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px;
+}
+
+th {
+  background: var(--bg3);
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border2);
+}
+
+td {
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  vertical-align: top;
+}
+
+tr:last-child td { border-bottom: none; }
+tr:nth-child(even) td { background: rgba(255,255,255,0.015); }
+tr:hover td { background: rgba(79,142,247,0.05); }
+
+/* ─── CALLOUT ─── */
+.callout {
+  border-left: 3px solid var(--accent);
+  background: rgba(79,142,247,0.07);
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+  margin: 12px 0;
+  font-size: 13.5px;
+  color: var(--text2);
+}
+
+.callout.warn { border-color: var(--yellow); background: rgba(245,158,11,0.07); color: #fcd34d; }
+.callout.success { border-color: var(--green); background: rgba(16,185,129,0.07); color: #6ee7b7; }
+.callout.danger { border-color: var(--red); background: rgba(239,68,68,0.07); color: #fca5a5; }
+
+/* ─── COLLAPSIBLE ─── */
+.collapsible { margin-bottom: 10px; }
+
+.collapsible-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 18px;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  user-select: none;
+}
+
+.collapsible-header:hover { border-color: var(--border2); }
+.collapsible-header.open { 
+  border-color: var(--accent);
+  border-radius: 8px 8px 0 0;
+  background: rgba(79,142,247,0.08);
+}
+
+.collapsible-header .ch-title {
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.collapsible-header .ch-arrow {
+  transition: transform 0.25s;
+  color: var(--text3);
+  font-size: 12px;
+}
+
+.collapsible-header.open .ch-arrow { transform: rotate(180deg); color: var(--accent); }
+
+.collapsible-body {
+  display: none;
+  padding: 16px 18px;
+  border: 1px solid var(--accent);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  background: var(--card);
+  font-size: 13.5px;
+  color: var(--text2);
+  line-height: 1.7;
+}
+
+.collapsible-body.open { display: block; animation: slideDown 0.2s ease; }
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── STEPS ─── */
+.steps { counter-reset: step; margin: 8px 0; }
+
+.step {
+  display: flex; gap: 14px; margin-bottom: 10px;
+  counter-increment: step;
+}
+
+.step::before {
+  content: counter(step);
+  min-width: 26px; height: 26px;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.step p { color: var(--text2); font-size: 13.5px; line-height: 1.6; }
+
+/* ─── CODE ─── */
+.code-block {
+  background: #0a0e1a;
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: #e2e8f0;
+  line-height: 1.7;
+  margin: 10px 0;
+  overflow-x: auto;
+}
+
+.code-block .kw { color: #c792ea; }
+.code-block .val { color: #f78c6c; }
+.code-block .cmt { color: #546e7a; font-style: italic; }
+.code-block .fn { color: #82aaff; }
+.code-block .str { color: #c3e88d; }
+.code-block .num { color: #f78c6c; }
+
+/* ─── BADGES ─── */
+.badge {
+  display: inline-block;
+  padding: 2px 8px; border-radius: 4px;
+  font-family: var(--mono); font-size: 10px;
+  font-weight: 700; letter-spacing: 0.5px;
+}
+
+.badge-blue { background: rgba(79,142,247,0.2); color: #93c5fd; }
+.badge-green { background: rgba(16,185,129,0.2); color: #6ee7b7; }
+.badge-red { background: rgba(239,68,68,0.2); color: #fca5a5; }
+.badge-yellow { background: rgba(245,158,11,0.2); color: #fcd34d; }
+.badge-purple { background: rgba(124,58,237,0.2); color: #c4b5fd; }
+
+/* ─── INTERACTIVE: DISK SCHEDULER ─── */
+.scheduler-tool {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 16px 0;
+}
+
+.scheduler-tool h4 {
+  font-family: var(--display);
+  font-weight: 700; font-size: 15px;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+
+.sch-controls {
+  display: grid; grid-template-columns: 1fr 1fr auto;
+  gap: 12px; margin-bottom: 16px; align-items: end;
+}
+
+.sch-controls label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 10px; letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 5px;
+}
+
+.sch-controls input, .sch-controls select {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.sch-controls input:focus, .sch-controls select:focus { border-color: var(--accent); }
+
+.btn {
+  padding: 8px 20px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+}
+
+.btn-primary:hover { background: #3b7de0; }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text2);
+  border: 1px solid var(--border);
+}
+
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+.disk-canvas-wrap {
+  margin: 16px 0;
+  position: relative;
+}
+
+#diskCanvas {
+  width: 100%;
+  height: 100px;
+  background: var(--bg3);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  display: block;
+}
+
+.disk-result {
+  display: flex; align-items: center; gap: 16px;
+  padding: 12px 16px;
+  background: var(--bg3);
+  border-radius: 8px;
+  margin-top: 12px;
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.disk-result .label { color: var(--text3); }
+.disk-result .val { color: var(--accent); font-size: 16px; font-weight: 700; }
+
+.disk-sequence {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
+}
+
+.disk-seq-item {
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text2);
+  transition: all 0.3s;
+}
+
+.disk-seq-item.head { background: rgba(79,142,247,0.3); border-color: var(--accent); color: white; }
+.disk-seq-item.visited { background: rgba(16,185,129,0.2); border-color: var(--green); color: #6ee7b7; }
+
+/* ─── QUIZ MODE ─── */
+.quiz-panel {
+  display: none;
+  padding: 48px;
+}
+
+.quiz-panel.active { display: block; }
+
+.quiz-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.quiz-progress {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 24px;
+}
+
+.progress-bar {
+  flex: 1; height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.quiz-q {
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 24px;
+  line-height: 1.4;
+}
+
+.quiz-options {
+  display: flex; flex-direction: column; gap: 10px;
+  margin-bottom: 20px;
+}
+
+.quiz-option {
+  padding: 13px 18px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--card2);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  color: var(--text2);
+  display: flex; align-items: center; gap: 12px;
+}
+
+.quiz-option:hover:not(.locked) {
+  border-color: var(--accent);
+  background: rgba(79,142,247,0.08);
+  color: var(--text);
+}
+
+.quiz-option.correct {
+  border-color: var(--green);
+  background: rgba(16,185,129,0.12);
+  color: #6ee7b7;
+}
+
+.quiz-option.wrong {
+  border-color: var(--red);
+  background: rgba(239,68,68,0.12);
+  color: #fca5a5;
+}
+
+.quiz-option.locked { cursor: default; }
+
+.opt-letter {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.quiz-option.correct .opt-letter { background: var(--green); color: var(--bg); }
+.quiz-option.wrong .opt-letter { background: var(--red); color: white; }
+
+.quiz-explanation {
+  background: var(--formula);
+  border: 1px solid var(--formula-border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-size: 13px;
+  color: #93c5fd;
+  margin-top: 12px;
+  display: none;
+  animation: slideDown 0.2s ease;
+}
+
+.quiz-explanation.show { display: block; }
+
+.quiz-nav {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 20px;
+}
+
+.quiz-score {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text3);
+}
+
+.quiz-score span { color: var(--accent); }
+
+/* ─── CALC TOOL ─── */
+.calc-tool {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 16px 0;
+}
+
+.calc-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 16px; margin-bottom: 16px;
+}
+
+.calc-field label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 10px; letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 5px;
+}
+
+.calc-field input {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 9px 12px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.calc-field input:focus { border-color: var(--accent); }
+
+.calc-result {
+  background: var(--formula);
+  border: 1px solid var(--formula-border);
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: #93c5fd;
+  margin-top: 12px;
+  min-height: 48px;
+  white-space: pre-wrap;
+}
+
+/* ─── BANKER TOOL ─── */
+.banker-tool {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 16px 0;
+}
+
+.banker-matrix {
+  overflow-x: auto;
+  margin: 12px 0;
+}
+
+.banker-matrix table td input {
+  width: 44px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 5px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+  text-align: center;
+  outline: none;
+}
+
+.banker-matrix table td input:focus { border-color: var(--accent); }
+
+.safe-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-family: var(--mono);
+  font-size: 13px;
+  margin-top: 12px;
+}
+
+.safe-badge.safe { background: rgba(16,185,129,0.15); color: var(--green); border: 1px solid var(--green); }
+.safe-badge.unsafe { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid var(--red); }
+
+/* ─── HIGHLIGHT ─── */
+b, strong { color: var(--text); font-weight: 600; }
+em { color: var(--accent3); font-style: italic; }
+
+.hl-blue { color: #93c5fd; }
+.hl-green { color: #6ee7b7; }
+.hl-yellow { color: #fcd34d; }
+.hl-red { color: #fca5a5; }
+
+/* ─── SCROLL PROGRESS ─── */
+.scroll-progress {
+  position: fixed; top: 0; left: 260px; right: 0;
+  height: 2px; background: transparent; z-index: 200;
+}
+
+.scroll-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  width: 0%;
+  transition: width 0.1s;
+}
+
+/* ─── ANIMATIONS ─── */
+.fade-in { animation: fadeIn 0.4s ease; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 900px) {
+  .shell { grid-template-columns: 1fr; }
+  .sidebar { position: static; height: auto; }
+  .scroll-progress { left: 0; }
+  .section-header, .section-body { padding-left: 20px; padding-right: 20px; }
+  .hero { padding: 28px 20px; }
+  .grid-2 { grid-template-columns: 1fr; }
+  .quiz-panel { padding: 20px; }
+}
+
+/* ─── UTILITY ─── */
+p { margin-bottom: 8px; color: var(--text2); }
+ul, ol { padding-left: 20px; color: var(--text2); font-size: 13.5px; }
+li { margin-bottom: 4px; line-height: 1.6; }
+hr { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+.spacer { margin-top: 16px; }
+</style>
+</head>
+<body>
+
+<div class="scroll-progress"><div class="scroll-progress-bar" id="spb"></div></div>
+
+<div class="shell">
+
+<!-- ═══ SIDEBAR ═══ -->
+<nav class="sidebar" id="sidebar">
+  <div class="logo-area">
+    <div class="tag">PCCSL407</div>
+    <h1>OS Exam<br>Study Guide</h1>
+  </div>
+
+  <div class="search-box">
+    <span class="si">⌕</span>
+    <input type="text" id="searchInput" placeholder="Search topics…" oninput="doSearch(this.value)">
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">Topics</div>
+    <a class="nav-item active" onclick="showTopic('all'); setActive(this)">
+      <span class="num">★</span> All Topics
+    </a>
+    <a class="nav-item" onclick="showTopic('disk'); setActive(this)">
+      <span class="num">01</span> Disk Geometry
+    </a>
+    <a class="nav-item" onclick="showTopic('scheduling'); setActive(this)">
+      <span class="num">02</span> Disk Scheduling
+    </a>
+    <a class="nav-item" onclick="showTopic('memvirt'); setActive(this)">
+      <span class="num">03</span> Memory Virtualization
+    </a>
+    <a class="nav-item" onclick="showTopic('paging'); setActive(this)">
+      <span class="num">04</span> Paging
+    </a>
+    <a class="nav-item" onclick="showTopic('tlb'); setActive(this)">
+      <span class="num">05</span> TLB
+    </a>
+    <a class="nav-item" onclick="showTopic('emat'); setActive(this)">
+      <span class="num">06</span> EMAT
+    </a>
+    <a class="nav-item" onclick="showTopic('multilevel'); setActive(this)">
+      <span class="num">07</span> Multi-Level Paging
+    </a>
+    <a class="nav-item" onclick="showTopic('deadlock'); setActive(this)">
+      <span class="num">08</span> Deadlock
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">Tools</div>
+    <a class="nav-item" onclick="showTopic('tools'); setActive(this)">
+      <span class="num">⚡</span> Interactive Tools
+    </a>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="mode-toggles">
+      <button class="mode-btn active" id="studyBtn" onclick="setMode('study')">Study</button>
+      <button class="mode-btn" id="quizBtn" onclick="setMode('quiz')">Quiz</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══ MAIN ═══ -->
+<main class="main" id="mainContent" onscroll="updateScrollProgress()">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="breadcrumb">Operating Systems · PCCSL407</div>
+    <h2>Exam Study Notes</h2>
+    <p>7 core topics with theory, worked examples, interactive tools, and quizzes. Everything directly from your course PDFs.</p>
+    <div class="hero-chips">
+      <span class="chip active" onclick="showTopic('all'); setChip(this)">All</span>
+      <span class="chip" onclick="showTopic('disk'); setChip(this)">Disk</span>
+      <span class="chip" onclick="showTopic('paging'); setChip(this)">Paging</span>
+      <span class="chip" onclick="showTopic('emat'); setChip(this)">EMAT</span>
+      <span class="chip" onclick="showTopic('deadlock'); setChip(this)">Deadlock</span>
+      <span class="chip" onclick="showTopic('tools'); setChip(this)">⚡ Tools</span>
+    </div>
+  </div>
+
+  <!-- ─────────── STUDY MODE ─────────── -->
+  <div id="studyMode" class="content">
+
+  <!-- ══ DISK GEOMETRY ══ -->
+  <section class="topic-section visible" data-topic="disk">
+    <div class="section-header">
+      <div class="sec-tag">Topic 01</div>
+      <h3>Disk Geometry</h3>
+    </div>
+    <div class="section-body">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title"><div class="dot"></div>Physical Components</div>
+          <div class="t-wrap"><table>
+            <tr><th>Component</th><th>Definition</th></tr>
+            <tr><td><b>Platter</b></td><td>Rigid circular disk coated with magnetic material. Each platter has 2 surfaces.</td></tr>
+            <tr><td><b>Track</b></td><td>Concentric circular path on a surface where data is magnetically recorded.</td></tr>
+            <tr><td><b>Sector</b></td><td>Smallest storage unit. Typically 512 bytes or 4096 bytes.</td></tr>
+            <tr><td><b>Cylinder</b></td><td>All tracks at the same arm position across ALL platter surfaces (stacked). No arm movement needed to access a full cylinder.</td></tr>
+            <tr><td><b>R/W Head</b></td><td>Flies just above each surface. One per surface; all attached to one actuator arm.</td></tr>
+          </table></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><div class="dot yellow"></div>Access Time Components</div>
+          <div class="formula">Access Time = Seek Time + Rotational Latency + Transfer Time</div>
+          <ul>
+            <li><b>Seek Time</b> — arm moves to correct track (ms)</li>
+            <li><b>Rotational Latency</b> — wait for sector to rotate under head</li>
+            <li><b>Transfer Time</b> — actual data read/write</li>
+          </ul>
+          <hr>
+          <div class="formula">Avg Rot. Latency = ½ × (60/RPM × 1000) ms<br>Worst-case = 1 × (60/RPM × 1000) ms</div>
+          <div class="formula">Capacity = Platters × 2 × Tracks/Surface × Sectors/Track × Bytes/Sector</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="dot cyan"></div>Worked Problems</div>
+
+        <div class="collapsible">
+          <div class="collapsible-header" onclick="toggleCollapse(this)">
+            <span class="ch-title">Q1. Disk at 7200 RPM — find time per rotation & avg rotational latency</span>
+            <span class="ch-arrow">▼</span>
+          </div>
+          <div class="collapsible-body">
+            <div class="steps">
+              <div class="step"><p>Time per rotation = 60 / 7200 = 0.00833 s = <b class="hl-blue">8.33 ms</b></p></div>
+              <div class="step"><p>Avg rotational latency = 8.33 / 2 = <b class="hl-green">4.17 ms</b></p></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="collapsible">
+          <div class="collapsible-header" onclick="toggleCollapse(this)">
+            <span class="ch-title">Q2. Seek=9ms, 6000 RPM, Transfer=0.6ms — total access time</span>
+            <span class="ch-arrow">▼</span>
+          </div>
+          <div class="collapsible-body">
+            <div class="steps">
+              <div class="step"><p>Time per rotation = 60/6000 = 10 ms → Avg rotational latency = 5 ms</p></div>
+              <div class="step"><p>Access Time = 9 + 5 + 0.6 = <b class="hl-green">14.6 ms</b></p></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="collapsible">
+          <div class="collapsible-header" onclick="toggleCollapse(this)">
+            <span class="ch-title">Q3. 5 platters, 2 surfaces, 1500 tracks, 400 sectors, 512 B/sector — capacity</span>
+            <span class="ch-arrow">▼</span>
+          </div>
+          <div class="collapsible-body">
+            <div class="steps">
+              <div class="step"><p>Total surfaces = 5 × 2 = 10</p></div>
+              <div class="step"><p>Total sectors = 10 × 1500 × 400 = 6,000,000</p></div>
+              <div class="step"><p>Total bytes = 6,000,000 × 512 = 3,072,000,000 bytes</p></div>
+              <div class="step"><p>Convert: 3,072,000,000 / 1,048,576 ≈ <b class="hl-green">2930 MB ≈ 2.93 GB</b></p></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="collapsible">
+          <div class="collapsible-header" onclick="toggleCollapse(this)">
+            <span class="ch-title">Q4. Seek=8ms, 5400 RPM, Transfer=0.5ms — total access time</span>
+            <span class="ch-arrow">▼</span>
+          </div>
+          <div class="collapsible-body">
+            <div class="steps">
+              <div class="step"><p>60/5400 = 11.11 ms → Avg latency = 5.55 ms</p></div>
+              <div class="step"><p>Access Time = 8 + 5.55 + 0.5 = <b class="hl-green">14.05 ms</b></p></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="collapsible">
+          <div class="collapsible-header" onclick="toggleCollapse(this)">
+            <span class="ch-title">Q5. Seek=7ms, 7200 RPM, Transfer=0.4ms — WORST-CASE (sector just missed)</span>
+            <span class="ch-arrow">▼</span>
+          </div>
+          <div class="collapsible-body">
+            <div class="callout warn">When the request arrives just AFTER the desired sector has passed, you must wait a FULL rotation — not half.</div>
+            <div class="steps">
+              <div class="step"><p>Time per rotation = 60/7200 = 8.33 ms</p></div>
+              <div class="step"><p>Worst-case rotational delay = full rotation = 8.33 ms</p></div>
+              <div class="step"><p>Worst-case Access Time = 7 + 8.33 + 0.4 = <b class="hl-red">15.73 ms</b></p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ DISK SCHEDULING ══ -->
+  <section class="topic-section visible" data-topic="scheduling">
+    <div class="section-header">
+      <div class="sec-tag">Topic 02</div>
+      <h3>Disk Scheduling</h3>
+    </div>
+    <div class="section-body">
+      <div class="t-wrap"><table>
+        <tr><th>Algorithm</th><th>Strategy</th><th>Head Movement (example)</th><th>Key Issue</th></tr>
+        <tr><td><b>FCFS</b></td><td>Serve in arrival order</td><td><span class="badge badge-red">640 cylinders</span></td><td>Very inefficient, large back-and-forth</td></tr>
+        <tr><td><b>SSTF</b></td><td>Serve closest to current head</td><td><span class="badge badge-yellow">236 cylinders</span></td><td>Starvation of distant requests (like SJF)</td></tr>
+        <tr><td><b>SCAN</b> (Elevator)</td><td>Sweep one way, reverse at end</td><td><span class="badge badge-yellow">236 cylinders</span></td><td>Requests near just-passed end wait longest</td></tr>
+        <tr><td><b>C-SCAN</b></td><td>One direction only, jump back without servicing</td><td>More than SCAN</td><td>More uniform wait time than SCAN</td></tr>
+        <tr><td><b>LOOK</b></td><td>SCAN but stops at last request (not disk end)</td><td>Less than SCAN</td><td>More efficient than SCAN</td></tr>
+        <tr><td><b>C-LOOK</b></td><td>C-SCAN but stops at last request</td><td><span class="badge badge-green">Most efficient</span></td><td>Best average wait time</td></tr>
+      </table></div>
+
+      <div class="callout">
+        <b>FCFS calculation:</b> Queue: 98, 183, 37, 122, 14, 124, 65, 67 | Head at 53<br>
+        |98-53| + |183-98| + |37-183| + |122-37| + |14-122| + |124-14| + |65-124| + |67-65| = 45+85+146+85+108+110+59+2 = <b>640</b>
+      </div>
+
+      <div class="callout">
+        <b>Recommended defaults (from PDF):</b> SSTF or LOOK. SCAN/C-SCAN better under heavy load. OS should not need to manage rotational latency — only seek time is typically optimized.
+      </div>
+
+      <!-- INTERACTIVE SCHEDULER -->
+      <div class="scheduler-tool">
+        <h4>⚡ Interactive Disk Scheduler</h4>
+        <div class="sch-controls">
+          <div>
+            <label>Request Queue (comma-separated)</label>
+            <input type="text" id="schQueue" value="98,183,37,122,14,124,65,67">
+          </div>
+          <div>
+            <label>Head Start Position</label>
+            <input type="number" id="schHead" value="53" min="0" max="199">
+          </div>
+          <div>
+            <label>Algorithm</label>
+            <select id="schAlgo">
+              <option value="fcfs">FCFS</option>
+              <option value="sstf">SSTF</option>
+              <option value="scan">SCAN</option>
+              <option value="cscan">C-SCAN</option>
+              <option value="look">LOOK</option>
+              <option value="clook">C-LOOK</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="runScheduler()">Run Simulation</button>
+        <button class="btn btn-ghost" style="margin-left:8px" onclick="compareAll()">Compare All</button>
+
+        <div class="disk-canvas-wrap">
+          <canvas id="diskCanvas" height="100"></canvas>
+        </div>
+        <div id="diskResult" class="disk-result" style="display:none">
+          <span class="label">Algorithm:</span><span id="drAlgo" class="val"></span>
+          <span class="label">Total movement:</span><span id="drMove" class="val"></span>
+          <span class="label">cylinders</span>
+        </div>
+        <div id="diskSeq" class="disk-sequence"></div>
+        <div id="compareTable" style="margin-top:12px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ MEMORY VIRTUALIZATION ══ -->
+  <section class="topic-section visible" data-topic="memvirt">
+    <div class="section-header">
+      <div class="sec-tag">Topic 03</div>
+      <h3>Memory Virtualization</h3>
+    </div>
+    <div class="section-body">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title"><div class="dot"></div>Address Space</div>
+          <p>Set of all memory addresses a program can generate. Each process sees its own private address space.</p>
+          <div class="t-wrap"><table>
+            <tr><th>Type</th><th>Description</th></tr>
+            <tr><td><b>Logical/Virtual</b></td><td>Generated by CPU. Starts at 0. What the program sees.</td></tr>
+            <tr><td><b>Physical</b></td><td>Actual RAM location. Managed by OS + hardware.</td></tr>
+          </table></div>
+          <hr>
+          <div class="card-title" style="margin-top:8px"><div class="dot cyan"></div>Process Layout (low → high)</div>
+          <div class="code-block"><span class="str">High</span>  ↑ Stack (grows ↓) — local vars, return addresses
+       │ 
+       │ Heap  (grows ↑) — malloc/dynamic alloc
+       │ 
+       │ BSS   — uninit globals (zeroed at runtime)
+       │ Data  — init globals (int g = 10)
+<span class="str">Low</span>   ↓ Text  — compiled code (read-only)</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><div class="dot yellow"></div>Base & Bounds</div>
+          <p>Each process gets two CPU registers:</p>
+          <ul>
+            <li><b>Base</b> — starting physical address</li>
+            <li><b>Bounds</b> — SIZE of the process region</li>
+          </ul>
+          <div class="formula">Physical Address = Base + Logical Address<br>If Logical Address ≥ Bound → TRAP</div>
+          <hr>
+          <b>Example:</b> Base=4000, Bound=1500
+          <div class="t-wrap" style="margin-top:8px"><table>
+            <tr><th>Logical</th><th>Valid?</th><th>Physical</th></tr>
+            <tr><td>700</td><td><span class="badge badge-green">✓</span></td><td>4700</td></tr>
+            <tr><td>1499</td><td><span class="badge badge-green">✓</span></td><td>5499</td></tr>
+            <tr><td>1500</td><td><span class="badge badge-red">✗</span></td><td>TRAP</td></tr>
+            <tr><td>2000</td><td><span class="badge badge-red">✗</span></td><td>TRAP</td></tr>
+          </table></div>
+          <div class="callout" style="margin-top:10px">Limitation: external fragmentation + no support for programs larger than RAM → led to segmentation & paging.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="dot purple"></div>Segmentation</div>
+        <div class="grid-2">
+          <div>
+            <p>Divides virtual address space into <b>variable-size logical segments</b> (code, data, heap, stack). Each has its own base + limit.</p>
+            <div class="formula">VA = ( Segment Number | Offset )<br>PA = Segment Base + Offset<br>If Offset ≥ Limit → SEGFAULT</div>
+            <div class="callout warn">Stack grows <b>downward</b> — PA = Base − Offset for stack segment.</div>
+          </div>
+          <div>
+            <b>Worked Example:</b>
+            <div class="t-wrap"><table>
+              <tr><th>Seg#</th><th>Base</th><th>Limit</th></tr>
+              <tr><td>0</td><td>840</td><td>300</td></tr>
+              <tr><td>1</td><td>1250</td><td>500</td></tr>
+              <tr><td>2</td><td>430</td><td>260</td></tr>
+              <tr><td>3</td><td>2100</td><td>450</td></tr>
+            </table></div>
+            <div class="t-wrap" style="margin-top:8px"><table>
+              <tr><th>LA</th><th>Result</th><th>PA</th></tr>
+              <tr><td>(0,250)</td><td><span class="badge badge-green">valid</span></td><td>1090</td></tr>
+              <tr><td>(1,520)</td><td><span class="badge badge-red">SEGFAULT</span></td><td>—</td></tr>
+              <tr><td>(2,200)</td><td><span class="badge badge-green">valid</span></td><td>630</td></tr>
+              <tr><td>(0,350)</td><td><span class="badge badge-red">SEGFAULT</span></td><td>—</td></tr>
+            </table></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PAGING ══ -->
+  <section class="topic-section visible" data-topic="paging">
+    <div class="section-header">
+      <div class="sec-tag">Topic 04</div>
+      <h3>Paging</h3>
+    </div>
+    <div class="section-body">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title"><div class="dot"></div>Core Concept</div>
+          <p>Virtual memory → <b>pages</b> (fixed size). Physical memory → <b>frames</b> (same size). Any page maps to any frame — no contiguous allocation needed.</p>
+          <div class="formula">Page Number = VA ÷ Page Size  (integer)<br>Offset = VA mod Page Size<br>PA = (Frame Number × Page Size) + Offset</div>
+          <hr>
+          <p><b>VA structure:</b> If VA space = 2<sup>m</sup>, page size = 2<sup>n</sup>:</p>
+          <div class="code-block">VA = [ Page# (m-n bits) | Offset (n bits) ]
+Offset bits = log₂(Page Size)
+Page# bits = m - n</div>
+          <div class="callout success">Eliminates external fragmentation. May have internal fragmentation (last page not fully used).</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><div class="dot green"></div>Page Table Entry (PTE)</div>
+          <div class="t-wrap"><table>
+            <tr><th>Field</th><th>Meaning</th></tr>
+            <tr><td><b>Frame Number</b></td><td>Physical frame where page is stored</td></tr>
+            <tr><td><b>Valid Bit</b></td><td>1=in memory, 0=not present (page fault)</td></tr>
+            <tr><td><b>Dirty Bit</b></td><td>Modified since loaded — must write back</td></tr>
+            <tr><td><b>Reference Bit</b></td><td>Recently accessed — used in replacement</td></tr>
+            <tr><td><b>Protection</b></td><td>R/W/X permissions</td></tr>
+          </table></div>
+          <hr>
+          <p><b>Page Fault steps:</b></p>
+          <div class="steps">
+            <div class="step"><p>Hardware detects invalid bit → page fault exception → OS takes control</p></div>
+            <div class="step"><p>OS checks if access is valid (belongs to process?)</p></div>
+            <div class="step"><p>Locate page on disk (swap space)</p></div>
+            <div class="step"><p>Load page into free frame (run replacement if no free frame)</p></div>
+            <div class="step"><p>Update PTE: set frame#, valid=1</p></div>
+            <div class="step"><p>Restart the faulting instruction</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="dot cyan"></div>Worked Problems</div>
+        <div class="collapsible">
+          <div class="collapsible-header" onclick="toggleCollapse(this)">
+            <span class="ch-title">Q1. Page=1KB, VA=2500, page 2→frame 7 — find PA</span><span class="ch-arrow">▼</span>
+          </div>
+          <div class="collapsible-body">
+            <p>Page# = 2500 ÷ 1024 = <b>2</b>,  Offset = 2500 mod 1024 = <b>452</b></p>
+            <p>PA = (7 × 1024) + 452 = 7168 + 452 = <b class="hl-green">7620</b></p>
+          </div>
+        </div>
+        <div class="collapsible">
+          <div class="collapsible-header" onclick="toggleCollapse(this)">
+            <span class="ch-title">Q2. Page=2KB, VA=6000, page 2 invalid — page fault?</span><span class="ch-arrow">▼</span>
+          </div>
+          <div class="collapsible-body">
+            <p>Page# = 6000 ÷ 2048 = <b>2</b> → Page 2 is invalid → <b class="hl-red">PAGE FAULT occurs</b></p>
+          </div>
+        </div>
+        <div class="collapsible">
+          <div class="collapsible-header" onclick="toggleCollapse(this)">
+            <span class="ch-title">Q3. Page=2KB, VA=0x5A3C7 — page# and offset</span><span class="ch-arrow">▼</span>
+          </div>
+          <div class="collapsible-body">
+            <p>0x5A3C7 → (5×65536)+(10×4096)+(3×256)+(12×16)+7 = 327680+40960+768+192+7 = <b>369,607</b></p>
+            <p>Page# = 369,607 ÷ 2048 = <b class="hl-blue">180</b></p>
+            <p>Offset = 369,607 mod 2048 = <b class="hl-blue">967</b></p>
+          </div>
+        </div>
+        <div class="collapsible">
+          <div class="collapsible-header" onclick="toggleCollapse(this)">
+            <span class="ch-title">Q4. VA space=64MB, page=4KB — pages, bits</span><span class="ch-arrow">▼</span>
+          </div>
+          <div class="collapsible-body">
+            <p>64MB = 2²⁶,  4KB = 2¹²</p>
+            <p>Offset bits = 12 | Pages = 2²⁶/2¹² = 2¹⁴ = <b>16,384</b> | Page# bits = 14 | Total LA bits = <b class="hl-green">26</b></p>
+          </div>
+        </div>
+        <div class="collapsible">
+          <div class="collapsible-header" onclick="toggleCollapse(this)">
+            <span class="ch-title">Q5. VA=30 bits, page=2KB, PTE=4 bytes — #pages and page table size</span><span class="ch-arrow">▼</span>
+          </div>
+          <div class="collapsible-body">
+            <p>VA space = 2³⁰,  page = 2¹¹ →  pages = 2³⁰/2¹¹ = 2¹⁹ = <b>524,288</b></p>
+            <p>Page table size = 524,288 × 4 = <b class="hl-green">2 MB</b></p>
+          </div>
+        </div>
+        <div class="collapsible">
+          <div class="collapsible-header" onclick="toggleCollapse(this)">
+            <span class="ch-title">Practice: 64 pages of 1024 words, 32 frames — bits in LA and PA</span><span class="ch-arrow">▼</span>
+          </div>
+          <div class="collapsible-body">
+            <p>(a) LA bits: 64 pages = 2⁶ → 6 page bits + 1024 words = 2¹⁰ → 10 offset bits = <b class="hl-blue">16 bits</b></p>
+            <p>(b) PA bits: 32 frames = 2⁵ → 5 frame bits + 10 offset bits = <b class="hl-blue">15 bits</b></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGING CALCULATOR -->
+      <div class="calc-tool">
+        <div class="card-title" style="margin-bottom:14px"><div class="dot"></div>⚡ Paging Address Calculator</div>
+        <div class="calc-grid">
+          <div class="calc-field">
+            <label>Virtual Address</label>
+            <input type="number" id="calcVA" placeholder="e.g. 2500" oninput="calcPaging()">
+          </div>
+          <div class="calc-field">
+            <label>Page Size (bytes)</label>
+            <input type="number" id="calcPS" placeholder="e.g. 1024" oninput="calcPaging()">
+          </div>
+          <div class="calc-field">
+            <label>Frame Number (from page table)</label>
+            <input type="number" id="calcFN" placeholder="e.g. 7" oninput="calcPaging()">
+          </div>
+          <div class="calc-field">
+            <label>Physical Memory (bytes, optional)</label>
+            <input type="number" id="calcPM" placeholder="e.g. 67108864" oninput="calcPaging()">
+          </div>
+        </div>
+        <div class="calc-result" id="calcResult">Enter values above to calculate...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ TLB ══ -->
+  <section class="topic-section visible" data-topic="tlb">
+    <div class="section-header">
+      <div class="sec-tag">Topic 05</div>
+      <h3>TLB — Translation Lookaside Buffer</h3>
+    </div>
+    <div class="section-body">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title"><div class="dot"></div>What is TLB?</div>
+          <p>Without TLB: every memory access needs <b>2 memory accesses</b> (page table + data). TLB caches recent page→frame mappings to reduce this to ~1 access.</p>
+          <p>TLB is <b>associative memory</b> — ALL entries searched in parallel (not sequential). Part of the CPU instruction pipeline = near-zero overhead on hit.</p>
+          <div class="t-wrap"><table>
+            <tr><th>Property</th><th>Value</th></tr>
+            <tr><td>Size</td><td>32 to 1,024 entries (small)</td></tr>
+            <tr><td>Speed</td><td>Part of instruction pipeline</td></tr>
+            <tr><td>Hit ratio</td><td>90–99% in modern systems</td></tr>
+            <tr><td>ASID</td><td>Tags entries per-process (avoids full flush on context switch)</td></tr>
+          </table></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><div class="dot green"></div>TLB Hit vs Miss</div>
+          <div class="t-wrap"><table>
+            <tr><th>Event</th><th>Memory Accesses</th><th>What happens</th></tr>
+            <tr>
+              <td><span class="badge badge-green">HIT</span></td>
+              <td><b>1</b></td>
+              <td>Page# found in TLB → frame# immediately → access data</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-red">MISS</span></td>
+              <td><b>2</b></td>
+              <td>Page# not in TLB → access page table in RAM → get frame# → access data. Entry loaded into TLB.</td>
+            </tr>
+          </table></div>
+          <div class="formula">Hit Ratio = TLB Hits / Total Memory Accesses</div>
+          <div class="callout warn"><b>Context Switch + No ASID:</b> TLB must be fully flushed — all entries invalidated — otherwise process A could use process B's mappings. With ASIDs, multiple processes can coexist in TLB.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ EMAT ══ -->
+  <section class="topic-section visible" data-topic="emat">
+    <div class="section-header">
+      <div class="sec-tag">Topic 06</div>
+      <h3>EMAT — Effective Memory Access Time</h3>
+    </div>
+    <div class="section-body">
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Formulas</div>
+        <div class="grid-2">
+          <div>
+            <p><b>Without TLB overhead:</b></p>
+            <div class="formula">EMAT = (α × mem) + ((1-α) × 2×mem)</div>
+            <p>Where α = hit ratio, mem = memory access time</p>
+          </div>
+          <div>
+            <p><b>With TLB overhead (h ns for lookup):</b></p>
+            <div class="formula">Hit time = h + mem<br>Miss time = h + 2×mem<br>EMAT = α(h+mem) + (1-α)(h+2×mem)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="dot cyan"></div>Worked Problems</div>
+        <div class="collapsible">
+          <div class="collapsible-header" onclick="toggleCollapse(this)">
+            <span class="ch-title">Q1. mem=100ns, no overhead. Hit=80% and Hit=99%</span><span class="ch-arrow">▼</span>
+          </div>
+          <div class="collapsible-body">
+            <p>Hit=80%: EMAT = 0.80×100 + 0.20×200 = 80+40 = <b class="hl-green">120 ns</b></p>
+            <p>Hit=99%: EMAT = 0.99×100 + 0.01×200 = 99+2 = <b class="hl-green">101 ns</b></p>
+          </div>
+        </div>
+        <div class="collapsible">
+          <div class="collapsible-header" onclick="toggleCollapse(this)">
+            <span class="ch-title">Q2. mem=200ns, TLB overhead=20ns, hit=90% (PDF main example)</span><span class="ch-arrow">▼</span>
+          </div>
+          <div class="collapsible-body">
+            <p>(a) Without TLB: 2 × 200 = <b>400 ns</b></p>
+            <p>(b) Hit time = 20 + 200 = 220 ns</p>
+            <p>Miss time = 20 + 200 + 200 = 420 ns</p>
+            <p>EMAT = (0.9 × 220) + (0.1 × 420) = 198 + 42 = <b class="hl-green">240 ns</b></p>
+          </div>
+        </div>
+        <div class="collapsible">
+          <div class="collapsible-header" onclick="toggleCollapse(this)">
+            <span class="ch-title">Q3. mem=50ns, hit=75%, TLB lookup=2ns (textbook)</span><span class="ch-arrow">▼</span>
+          </div>
+          <div class="collapsible-body">
+            <p>(a) No TLB: 2 × 50 = <b>100 ns</b></p>
+            <p>(b) Hit time = 2+50 = 52 ns. Miss time = 2+50+50 = 102 ns.</p>
+            <p>EMAT = 0.75×52 + 0.25×102 = 39 + 25.5 = <b class="hl-green">64.5 ns</b></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- EMAT CALCULATOR -->
+      <div class="calc-tool">
+        <div class="card-title" style="margin-bottom:14px"><div class="dot yellow"></div>⚡ EMAT Calculator</div>
+        <div class="calc-grid">
+          <div class="calc-field">
+            <label>Memory Access Time (ns)</label>
+            <input type="number" id="ematMem" placeholder="e.g. 100" oninput="calcEMAT()">
+          </div>
+          <div class="calc-field">
+            <label>TLB Hit Ratio (0 to 1)</label>
+            <input type="number" id="ematHit" placeholder="e.g. 0.9" step="0.01" min="0" max="1" oninput="calcEMAT()">
+          </div>
+          <div class="calc-field">
+            <label>TLB Overhead (ns, 0 if none)</label>
+            <input type="number" id="ematOH" placeholder="e.g. 20" oninput="calcEMAT()">
+          </div>
+          <div class="calc-field">
+            <label>Without TLB reference time</label>
+            <input type="number" id="ematRef" placeholder="auto-calculated" readonly style="opacity:0.5">
+          </div>
+        </div>
+        <div class="calc-result" id="ematResult">Enter values above to calculate EMAT...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ MULTI-LEVEL PAGING ══ -->
+  <section class="topic-section visible" data-topic="multilevel">
+    <div class="section-header">
+      <div class="sec-tag">Topic 07</div>
+      <h3>Multi-Level Paging</h3>
+    </div>
+    <div class="section-body">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title"><div class="dot red"></div>The Problem</div>
+          <p>32-bit VA space + 4KB pages:</p>
+          <div class="code-block">Pages = 2³² / 2¹² = 2²⁰ = 1,048,576
+At 4 bytes/PTE → 4 MB per process
+100 processes → 400 MB just for page tables!</div>
+          <p>Worse: most of the virtual address space is <b>sparse (unused)</b> but flat table allocates entries for ALL pages.</p>
+          <div class="callout warn">Single-level page table must also be stored contiguously in RAM.</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><div class="dot green"></div>The Solution</div>
+          <p><b>Page the page table itself.</b> Only create inner tables for virtual regions actually in use.</p>
+          <div class="formula">VA = [ L1 Index | L2 Index | Offset ]<br><br>L2 bits = Total VA bits − L1 bits − Offset bits<br>L1 entries = 2^(L1 bits)<br>L2 entries = 2^(L2 bits)</div>
+          <div class="callout success">Sparse process: most inner page tables never created → saves huge amounts of memory.</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><div class="dot cyan"></div>Worked Problems</div>
+        <div class="collapsible">
+          <div class="collapsible-header" onclick="toggleCollapse(this)">
+            <span class="ch-title">Q1. VA=36 bits, page=8KB, L1 index=10 bits — find L2 bits, entries</span><span class="ch-arrow">▼</span>
+          </div>
+          <div class="collapsible-body">
+            <p>Offset bits = log₂(8KB) = log₂(8192) = <b>13</b></p>
+            <p>L2 bits = 36 − 10 − 13 = <b class="hl-blue">13 bits</b></p>
+            <p>L1 entries = 2¹⁰ = <b class="hl-blue">1024</b></p>
+            <p>L2 entries = 2¹³ = <b class="hl-blue">8192</b></p>
+          </div>
+        </div>
+        <div class="collapsible">
+          <div class="collapsible-header" onclick="toggleCollapse(this)">
+            <span class="ch-title">Textbook: 32-bit, 1KB page — two-level structure</span><span class="ch-arrow">▼</span>
+          </div>
+          <div class="collapsible-body">
+            <p>Offset = 10 bits. Remaining = 22 bits → split as 12 + 10.</p>
+            <div class="code-block">VA = [ p1 (12 bits) | p2 (10 bits) | offset (10 bits) ]
+p1 → outer page table (2¹² = 4096 entries)
+p2 → inner page table (2¹⁰ = 1024 entries/table)
+Known as "forward-mapped page table"</div>
+          </div>
+        </div>
+        <div class="collapsible">
+          <div class="collapsible-header" onclick="toggleCollapse(this)">
+            <span class="ch-title">64-bit — why even three levels isn't always enough</span><span class="ch-arrow">▼</span>
+          </div>
+          <div class="collapsible-body">
+            <p>64-bit VA + 4KB pages → 2⁵² page table entries in flat table.</p>
+            <p>Two-level: outer table = 2⁴² entries = 16 TB. Still too large.</p>
+            <p>Modern x86-64 uses <b>4-level page tables</b>. Each level = 1 extra memory access. TLB is essential to avoid 4+ accesses per logical address.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ DEADLOCK ══ -->
+  <section class="topic-section visible" data-topic="deadlock">
+    <div class="section-header">
+      <div class="sec-tag">Topic 08</div>
+      <h3>Deadlock</h3>
+    </div>
+    <div class="section-body">
+      <div class="callout danger"><b>Definition:</b> A set of processes permanently blocked — each holding resources needed by another. No process can proceed. All 4 Coffman conditions must hold simultaneously.</div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title"><div class="dot red"></div>Coffman's 4 Conditions</div>
+          <div class="collapsible">
+            <div class="collapsible-header open" onclick="toggleCollapse(this)">
+              <span class="ch-title">1. Mutual Exclusion</span><span class="ch-arrow">▼</span>
+            </div>
+            <div class="collapsible-body open">At least one resource is non-shareable. Only one process can use it at a time. Others must wait.</div>
+          </div>
+          <div class="collapsible">
+            <div class="collapsible-header" onclick="toggleCollapse(this)">
+              <span class="ch-title">2. Hold and Wait</span><span class="ch-arrow">▼</span>
+            </div>
+            <div class="collapsible-body">A process is holding ≥1 resource AND waiting for additional resources held by other processes.</div>
+          </div>
+          <div class="collapsible">
+            <div class="collapsible-header" onclick="toggleCollapse(this)">
+              <span class="ch-title">3. No Preemption</span><span class="ch-arrow">▼</span>
+            </div>
+            <div class="collapsible-body">Resources cannot be forcibly taken. Released only voluntarily after the process completes its task.</div>
+          </div>
+          <div class="collapsible">
+            <div class="collapsible-header" onclick="toggleCollapse(this)">
+              <span class="ch-title">4. Circular Wait</span><span class="ch-arrow">▼</span>
+            </div>
+            <div class="collapsible-body">Cycle: P0 waits for P1's resource, P1 waits for P2's, ..., Pn waits for P0's resource.</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><div class="dot yellow"></div>RAG & Wait-For Graph</div>
+          <p><b>RAG:</b> Processes=circles, Resources=squares. Request edge: Ti→Rj. Assignment edge: Rj→Ti.</p>
+          <div class="t-wrap"><table>
+            <tr><th>RAG State</th><th>Conclusion</th></tr>
+            <tr><td>No cycle</td><td><span class="badge badge-green">No deadlock</span></td></tr>
+            <tr><td>Cycle + single instance resources</td><td><span class="badge badge-red">Deadlock!</span></td></tr>
+            <tr><td>Cycle + multi-instance resources</td><td><span class="badge badge-yellow">Possible — verify</span></td></tr>
+          </table></div>
+          <hr>
+          <p><b>WFG:</b> Remove resource nodes from RAG. Pi→Pj means Pi waits for resource held by Pj. Cycle = deadlock. Only valid for single-instance resources.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Banker's Algorithm</div>
+        <div class="grid-2">
+          <div>
+            <div class="formula">Need = Max − Allocation<br><br>Safe if: ∃ sequence where all<br>processes can finish</div>
+            <p><b>Safety Algorithm:</b></p>
+            <div class="steps">
+              <div class="step"><p>Work = Available.  Finish[i] = false for all i</p></div>
+              <div class="step"><p>Find i: Finish[i]=false AND Need[i] ≤ Work</p></div>
+              <div class="step"><p>Work += Allocation[i];  Finish[i] = true.  Repeat from 2.</p></div>
+              <div class="step"><p>If all Finish[i]=true → <span class="badge badge-green">SAFE</span>, else → <span class="badge badge-red">UNSAFE</span></p></div>
+            </div>
+          </div>
+          <div>
+            <p><b>Example:</b> Available={1,1,1}</p>
+            <div class="t-wrap"><table>
+              <tr><th>P</th><th>Alloc A,B,C</th><th>Max A,B,C</th><th>Need A,B,C</th></tr>
+              <tr><td>P0</td><td>1,0,1</td><td>2,1,1</td><td>1,1,0</td></tr>
+              <tr><td>P1</td><td>0,1,0</td><td>1,2,1</td><td>1,1,1</td></tr>
+              <tr><td>P2</td><td>1,1,0</td><td>1,1,2</td><td>0,0,2</td></tr>
+              <tr><td>P3</td><td>0,0,1</td><td>1,1,1</td><td>1,1,0</td></tr>
+            </table></div>
+            <div class="callout success" style="margin-top:8px">Safe sequence: <b>P0→P1→P2→P3</b> ✓</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BANKER TOOL -->
+      <div class="banker-tool">
+        <div class="card-title" style="margin-bottom:14px"><div class="dot purple"></div>⚡ Banker's Algorithm Checker</div>
+        <p style="margin-bottom:12px;font-size:13px">3 processes, 3 resource types (A, B, C). Enter values and check safety.</p>
+        <div class="banker-matrix">
+          <table>
+            <tr>
+              <th>Process</th>
+              <th>Alloc A</th><th>Alloc B</th><th>Alloc C</th>
+              <th>Max A</th><th>Max B</th><th>Max C</th>
+              <th>Need A</th><th>Need B</th><th>Need C</th>
+            </tr>
+            <tr>
+              <td>P0</td>
+              <td><input type="number" class="ba" id="a00" value="1" min="0" oninput="updateNeed(0)"></td>
+              <td><input type="number" class="ba" id="a01" value="0" min="0" oninput="updateNeed(0)"></td>
+              <td><input type="number" class="ba" id="a02" value="1" min="0" oninput="updateNeed(0)"></td>
+              <td><input type="number" class="ba" id="m00" value="2" min="0" oninput="updateNeed(0)"></td>
+              <td><input type="number" class="ba" id="m01" value="1" min="0" oninput="updateNeed(0)"></td>
+              <td><input type="number" class="ba" id="m02" value="1" min="0" oninput="updateNeed(0)"></td>
+              <td><input type="number" class="ba" id="n00" readonly style="opacity:0.6" value="1"></td>
+              <td><input type="number" class="ba" id="n01" readonly style="opacity:0.6" value="1"></td>
+              <td><input type="number" class="ba" id="n02" readonly style="opacity:0.6" value="0"></td>
+            </tr>
+            <tr>
+              <td>P1</td>
+              <td><input type="number" class="ba" id="a10" value="0" min="0" oninput="updateNeed(1)"></td>
+              <td><input type="number" class="ba" id="a11" value="1" min="0" oninput="updateNeed(1)"></td>
+              <td><input type="number" class="ba" id="a12" value="0" min="0" oninput="updateNeed(1)"></td>
+              <td><input type="number" class="ba" id="m10" value="1" min="0" oninput="updateNeed(1)"></td>
+              <td><input type="number" class="ba" id="m11" value="2" min="0" oninput="updateNeed(1)"></td>
+              <td><input type="number" class="ba" id="m12" value="1" min="0" oninput="updateNeed(1)"></td>
+              <td><input type="number" class="ba" id="n10" readonly style="opacity:0.6" value="1"></td>
+              <td><input type="number" class="ba" id="n11" readonly style="opacity:0.6" value="1"></td>
+              <td><input type="number" class="ba" id="n12" readonly style="opacity:0.6" value="1"></td>
+            </tr>
+            <tr>
+              <td>P2</td>
+              <td><input type="number" class="ba" id="a20" value="1" min="0" oninput="updateNeed(2)"></td>
+              <td><input type="number" class="ba" id="a21" value="1" min="0" oninput="updateNeed(2)"></td>
+              <td><input type="number" class="ba" id="a22" value="0" min="0" oninput="updateNeed(2)"></td>
+              <td><input type="number" class="ba" id="m20" value="1" min="0" oninput="updateNeed(2)"></td>
+              <td><input type="number" class="ba" id="m21" value="1" min="0" oninput="updateNeed(2)"></td>
+              <td><input type="number" class="ba" id="m22" value="2" min="0" oninput="updateNeed(2)"></td>
+              <td><input type="number" class="ba" id="n20" readonly style="opacity:0.6" value="0"></td>
+              <td><input type="number" class="ba" id="n21" readonly style="opacity:0.6" value="0"></td>
+              <td><input type="number" class="ba" id="n22" readonly style="opacity:0.6" value="2"></td>
+            </tr>
+          </table>
+        </div>
+        <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:12px">
+          <div>
+            <label style="font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);display:block;margin-bottom:4px">Available A, B, C</label>
+            <div style="display:flex;gap:6px">
+              <input type="number" id="avA" value="1" min="0" style="width:52px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:7px;color:var(--text);font-family:var(--mono);font-size:13px;text-align:center;outline:none">
+              <input type="number" id="avB" value="1" min="0" style="width:52px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:7px;color:var(--text);font-family:var(--mono);font-size:13px;text-align:center;outline:none">
+              <input type="number" id="avC" value="1" min="0" style="width:52px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:7px;color:var(--text);font-family:var(--mono);font-size:13px;text-align:center;outline:none">
+            </div>
+          </div>
+          <div style="padding-top:18px">
+            <button class="btn btn-primary" onclick="runBanker()">Check Safety</button>
+          </div>
+        </div>
+        <div id="bankerResult" style="margin-top:12px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ TOOLS HUB ══ -->
+  <section class="topic-section" data-topic="tools">
+    <div class="section-header">
+      <div class="sec-tag">Interactive</div>
+      <h3>All Tools</h3>
+    </div>
+    <div class="section-body">
+      <div class="grid-3">
+        <div class="card" style="cursor:pointer" onclick="showTopic('scheduling');setActive(document.querySelectorAll('.nav-item')[2])">
+          <div class="card-title"><div class="dot"></div>Disk Scheduler</div>
+          <p style="font-size:13px">Visualize FCFS, SSTF, SCAN, C-SCAN, LOOK, C-LOOK with custom queues.</p>
+        </div>
+        <div class="card" style="cursor:pointer" onclick="showTopic('paging');setActive(document.querySelectorAll('.nav-item')[4])">
+          <div class="card-title"><div class="dot cyan"></div>Paging Calculator</div>
+          <p style="font-size:13px">Enter VA, page size, frame number → instant page#, offset, physical address.</p>
+        </div>
+        <div class="card" style="cursor:pointer" onclick="showTopic('emat');setActive(document.querySelectorAll('.nav-item')[6])">
+          <div class="card-title"><div class="dot yellow"></div>EMAT Calculator</div>
+          <p style="font-size:13px">Compute effective memory access time with hit ratio and TLB overhead.</p>
+        </div>
+        <div class="card" style="cursor:pointer" onclick="showTopic('deadlock');setActive(document.querySelectorAll('.nav-item')[8])">
+          <div class="card-title"><div class="dot purple"></div>Banker's Algorithm</div>
+          <p style="font-size:13px">Enter allocation/max matrices → check safe state + find safe sequence.</p>
+        </div>
+        <div class="card" style="cursor:pointer" onclick="setMode('quiz')">
+          <div class="card-title"><div class="dot red"></div>Quiz Mode</div>
+          <p style="font-size:13px">Test yourself across all 7 topics with instant feedback and explanations.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  </div><!-- /studyMode -->
+
+  <!-- ─────────── QUIZ MODE ─────────── -->
+  <div id="quizMode" class="quiz-panel">
+    <div class="quiz-card" id="quizCard">
+      <div class="quiz-progress">
+        <span style="font-family:var(--mono);font-size:11px;color:var(--text3)" id="quizCounter">1 / 20</span>
+        <div class="progress-bar"><div class="progress-fill" id="qProgress"></div></div>
+        <div class="quiz-score">Score: <span id="quizScore">0</span></div>
+      </div>
+      <div class="quiz-q" id="quizQ"></div>
+      <div class="quiz-options" id="quizOpts"></div>
+      <div class="quiz-explanation" id="quizExp"></div>
+      <div class="quiz-nav">
+        <button class="btn btn-ghost" id="prevBtn" onclick="quizPrev()" style="display:none">← Prev</button>
+        <button class="btn btn-primary" id="nextBtn" onclick="quizNext()" style="display:none">Next →</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// SCROLL PROGRESS
+// ═══════════════════════════════════════════
+function updateScrollProgress() {
+  const el = document.getElementById('mainContent');
+  const pct = (el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100;
+  document.getElementById('spb').style.width = pct + '%';
+}
+
+// ═══════════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════════
+function showTopic(topic) {
+  const sections = document.querySelectorAll('.topic-section');
+  sections.forEach(s => {
+    if (topic === 'all') {
+      s.classList.add('visible');
+    } else {
+      s.classList.toggle('visible', s.dataset.topic === topic);
+    }
+  });
+  document.getElementById('mainContent').scrollTop = 0;
+}
+
+function setActive(el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function setChip(el) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ═══════════════════════════════════════════
+// MODE TOGGLE
+// ═══════════════════════════════════════════
+function setMode(mode) {
+  const study = document.getElementById('studyMode');
+  const quiz = document.getElementById('quizMode');
+  const sb = document.getElementById('studyBtn');
+  const qb = document.getElementById('quizBtn');
+  if (mode === 'study') {
+    study.style.display = 'block';
+    quiz.classList.remove('active');
+    sb.classList.add('active'); qb.classList.remove('active');
+  } else {
+    study.style.display = 'none';
+    quiz.classList.add('active');
+    sb.classList.remove('active'); qb.classList.add('active');
+    initQuiz();
+  }
+}
+
+// ═══════════════════════════════════════════
+// COLLAPSIBLE
+// ═══════════════════════════════════════════
+function toggleCollapse(header) {
+  const body = header.nextElementSibling;
+  const isOpen = header.classList.contains('open');
+  header.classList.toggle('open', !isOpen);
+  body.classList.toggle('open', !isOpen);
+}
+
+// ═══════════════════════════════════════════
+// SEARCH
+// ═══════════════════════════════════════════
+function doSearch(q) {
+  if (!q) { showTopic('all'); return; }
+  q = q.toLowerCase();
+  const map = {
+    disk: ['disk','platter','sector','track','cylinder','rpm','seek','rotational','head crash'],
+    scheduling: ['fcfs','sstf','scan','look','cscan','c-scan','clook','scheduling','elevator','starvation'],
+    memvirt: ['address space','base','bounds','segmentation','virtual memory','logical','physical','compaction'],
+    paging: ['paging','page','frame','page table','page fault','pte','thrashing','offset'],
+    tlb: ['tlb','translation lookaside','hit ratio','asid','miss','associative'],
+    emat: ['emat','effective memory','access time','hit time','miss time'],
+    multilevel: ['multi-level','multilevel','hierarchical','two-level','outer page','inner page','forward-mapped'],
+    deadlock: ['deadlock','coffman','banker','mutual exclusion','hold and wait','circular wait','no preemption','rag','wait-for','safe state','safe sequence'],
+  };
+  const matches = [];
+  for (const [topic, keywords] of Object.entries(map)) {
+    if (keywords.some(k => k.includes(q) || q.includes(k))) matches.push(topic);
+  }
+  if (matches.length === 0) showTopic('all');
+  else {
+    const sections = document.querySelectorAll('.topic-section');
+    sections.forEach(s => s.classList.toggle('visible', matches.includes(s.dataset.topic)));
+  }
+}
+
+// ═══════════════════════════════════════════
+// DISK SCHEDULER
+// ═══════════════════════════════════════════
+function calcFCFS(queue, head) {
+  let seq = [head, ...queue], total = 0;
+  for (let i=1;i<seq.length;i++) total += Math.abs(seq[i]-seq[i-1]);
+  return { total, seq };
+}
+
+function calcSSTF(queue, head) {
+  let remaining = [...queue], cur = head, seq = [head], total = 0;
+  while (remaining.length) {
+    let idx = 0, minDist = Infinity;
+    remaining.forEach((r,i) => { const d = Math.abs(r-cur); if(d<minDist){minDist=d;idx=i;} });
+    total += minDist;
+    cur = remaining[idx];
+    seq.push(cur);
+    remaining.splice(idx,1);
+  }
+  return { total, seq };
+}
+
+function calcSCAN(queue, head, maxCyl=199) {
+  let sorted = [...queue].sort((a,b)=>a-b);
+  let left = sorted.filter(x=>x<head).reverse();
+  let right = sorted.filter(x=>x>=head);
+  let seq = [head, ...right, maxCyl, ...left];
+  let total = 0;
+  for(let i=1;i<seq.length;i++) total += Math.abs(seq[i]-seq[i-1]);
+  return {total, seq};
+}
+
+function calcCSCAN(queue, head, maxCyl=199) {
+  let sorted = [...queue].sort((a,b)=>a-b);
+  let right = sorted.filter(x=>x>=head);
+  let left = sorted.filter(x=>x<head);
+  let seq = [head, ...right, maxCyl, 0, ...left];
+  let total = 0;
+  for(let i=1;i<seq.length;i++) total += Math.abs(seq[i]-seq[i-1]);
+  return {total, seq};
+}
+
+function calcLOOK(queue, head) {
+  let sorted = [...queue].sort((a,b)=>a-b);
+  let left = sorted.filter(x=>x<head).reverse();
+  let right = sorted.filter(x=>x>=head);
+  let seq = [head, ...right, ...left];
+  let total = 0;
+  for(let i=1;i<seq.length;i++) total += Math.abs(seq[i]-seq[i-1]);
+  return {total, seq};
+}
+
+function calcCLOOK(queue, head) {
+  let sorted = [...queue].sort((a,b)=>a-b);
+  let right = sorted.filter(x=>x>=head);
+  let left = sorted.filter(x=>x<head);
+  let seq = [head, ...right, ...left];
+  let total = 0;
+  for(let i=1;i<seq.length;i++) total += Math.abs(seq[i]-seq[i-1]);
+  return {total, seq};
+}
+
+function getAlgoResult(algo, queue, head) {
+  switch(algo) {
+    case 'fcfs': return calcFCFS(queue, head);
+    case 'sstf': return calcSSTF(queue, head);
+    case 'scan': return calcSCAN(queue, head);
+    case 'cscan': return calcCSCAN(queue, head);
+    case 'look': return calcLOOK(queue, head);
+    case 'clook': return calcCLOOK(queue, head);
+  }
+}
+
+function runScheduler() {
+  const qStr = document.getElementById('schQueue').value;
+  const head = parseInt(document.getElementById('schHead').value) || 53;
+  const algo = document.getElementById('schAlgo').value;
+  const queue = qStr.split(',').map(s=>parseInt(s.trim())).filter(n=>!isNaN(n));
+  const result = getAlgoResult(algo, queue, head);
+  drawDiskChart(result.seq, head);
+  document.getElementById('diskResult').style.display = 'flex';
+  document.getElementById('drAlgo').textContent = algo.toUpperCase();
+  document.getElementById('drMove').textContent = result.total;
+  drawSequenceBadges(result.seq, head);
+  document.getElementById('compareTable').innerHTML = '';
+}
+
+function drawDiskChart(seq, head) {
+  const canvas = document.getElementById('diskCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+  canvas.height = 100 * window.devicePixelRatio;
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+  const W = canvas.offsetWidth, H = 100;
+  const maxCyl = 199, pad = 32;
+  ctx.clearRect(0,0,W,H);
+  // bg
+  ctx.fillStyle = '#1a2035';
+  ctx.fillRect(0,0,W,H);
+  // grid lines
+  ctx.strokeStyle = '#252d45';
+  ctx.lineWidth = 0.5;
+  for(let i=0;i<=4;i++) {
+    const y = pad/2 + (i/4)*(H-pad);
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+  }
+  // cyl labels
+  ctx.fillStyle = '#64748b';
+  ctx.font = '9px Space Mono, monospace';
+  ctx.textAlign = 'center';
+  [0,50,100,150,199].forEach(v => {
+    const x = pad + (v/maxCyl)*(W-2*pad);
+    ctx.fillText(v, x, H-4);
+  });
+  // path
+  ctx.strokeStyle = '#4f8ef7';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  seq.forEach((v, i) => {
+    const x = pad + (v/maxCyl)*(W-2*pad);
+    const y = pad/2 + (i/(seq.length-1))*(H-pad-8);
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  // dots
+  seq.forEach((v, i) => {
+    const x = pad + (v/maxCyl)*(W-2*pad);
+    const y = pad/2 + (i/(seq.length-1))*(H-pad-8);
+    ctx.beginPath();
+    ctx.arc(x,y,i===0?5:3.5,0,Math.PI*2);
+    ctx.fillStyle = i===0 ? '#f59e0b' : i===seq.length-1 ? '#10b981' : '#4f8ef7';
+    ctx.fill();
+  });
+}
+
+function drawSequenceBadges(seq, head) {
+  const container = document.getElementById('diskSeq');
+  container.innerHTML = seq.map((v,i) => 
+    `<span class="disk-seq-item ${v===head&&i===0?'head':i>0?'visited':''}">${v}</span>`
+  ).join('<span style="color:var(--text3);font-size:11px;align-self:center">→</span>');
+}
+
+function compareAll() {
+  const qStr = document.getElementById('schQueue').value;
+  const head = parseInt(document.getElementById('schHead').value) || 53;
+  const queue = qStr.split(',').map(s=>parseInt(s.trim())).filter(n=>!isNaN(n));
+  const algos = ['fcfs','sstf','scan','cscan','look','clook'];
+  const results = algos.map(a => ({ algo: a.toUpperCase(), ...getAlgoResult(a, queue, head) }));
+  const min = Math.min(...results.map(r=>r.total));
+  let html = `<div class="t-wrap"><table><tr><th>Algorithm</th><th>Head Movement</th><th></th></tr>`;
+  results.forEach(r => {
+    const pct = Math.round((r.total/results[0].total)*100);
+    html += `<tr><td><b>${r.algo}</b></td><td>${r.total} cylinders</td><td>${r.total===min?'<span class="badge badge-green">BEST</span>':''}</td></tr>`;
+  });
+  html += '</table></div>';
+  document.getElementById('compareTable').innerHTML = html;
+  document.getElementById('diskResult').style.display = 'none';
+  document.getElementById('diskSeq').innerHTML = '';
+}
+
+// ═══════════════════════════════════════════
+// PAGING CALC
+// ═══════════════════════════════════════════
+function calcPaging() {
+  const va = parseInt(document.getElementById('calcVA').value);
+  const ps = parseInt(document.getElementById('calcPS').value);
+  const fn = parseInt(document.getElementById('calcFN').value);
+  const pm = parseInt(document.getElementById('calcPM').value);
+  let out = '';
+  if (!isNaN(va) && !isNaN(ps)) {
+    const pn = Math.floor(va / ps);
+    const off = va % ps;
+    const offsetBits = Math.round(Math.log2(ps));
+    out += `Virtual Address : ${va}\nPage Size       : ${ps} bytes (${offsetBits} offset bits)\nPage Number     : ${pn}\nOffset          : ${off}\n`;
+    if (!isNaN(fn)) {
+      const pa = fn * ps + off;
+      out += `\nFrame Number    : ${fn}\nPhysical Address: ${pa}`;
+    }
+    if (!isNaN(pm)) {
+      const frames = Math.floor(pm / ps);
+      const frameBits = Math.ceil(Math.log2(frames));
+      out += `\n\nPhysical Memory : ${pm} bytes\nNum Frames      : ${frames} (${frameBits} frame bits)`;
+    }
+  }
+  document.getElementById('calcResult').textContent = out || 'Enter values above to calculate...';
+}
+
+// ═══════════════════════════════════════════
+// EMAT CALC
+// ═══════════════════════════════════════════
+function calcEMAT() {
+  const mem = parseFloat(document.getElementById('ematMem').value);
+  const hit = parseFloat(document.getElementById('ematHit').value);
+  const oh = parseFloat(document.getElementById('ematOH').value) || 0;
+  if (isNaN(mem) || isNaN(hit)) { document.getElementById('ematResult').textContent = 'Enter memory access time and hit ratio...'; return; }
+  const miss = 1 - hit;
+  const hitTime = oh + mem;
+  const missTime = oh + 2 * mem;
+  const emat = hit * hitTime + miss * missTime;
+  const noTLB = 2 * mem;
+  document.getElementById('ematRef').value = noTLB;
+  const out = `Without TLB : ${noTLB.toFixed(2)} ns (2 memory accesses always)
+Hit time    : ${oh} + ${mem} = ${hitTime.toFixed(2)} ns
+Miss time   : ${oh} + ${mem} + ${mem} = ${missTime.toFixed(2)} ns
+
+EMAT = (${hit} × ${hitTime.toFixed(2)}) + (${miss.toFixed(2)} × ${missTime.toFixed(2)})
+     = ${(hit*hitTime).toFixed(2)} + ${(miss*missTime).toFixed(2)}
+     = ${emat.toFixed(2)} ns
+
+Improvement over no-TLB: ${((noTLB-emat)/noTLB*100).toFixed(1)}%`;
+  document.getElementById('ematResult').textContent = out;
+}
+
+// ═══════════════════════════════════════════
+// BANKER'S ALGORITHM
+// ═══════════════════════════════════════════
+function updateNeed(proc) {
+  for (let j=0;j<3;j++) {
+    const a = parseInt(document.getElementById(`a${proc}${j}`).value)||0;
+    const m = parseInt(document.getElementById(`m${proc}${j}`).value)||0;
+    document.getElementById(`n${proc}${j}`).value = Math.max(0, m-a);
+  }
+}
+
+function runBanker() {
+  const n=3, r=3;
+  const alloc=[], need=[], max=[];
+  for(let i=0;i<n;i++) {
+    alloc.push([]);need.push([]);max.push([]);
+    for(let j=0;j<r;j++) {
+      alloc[i].push(parseInt(document.getElementById(`a${i}${j}`).value)||0);
+      max[i].push(parseInt(document.getElementById(`m${i}${j}`).value)||0);
+      need[i].push(Math.max(0, max[i][j]-alloc[i][j]));
+    }
+  }
+  const avail = [
+    parseInt(document.getElementById('avA').value)||0,
+    parseInt(document.getElementById('avB').value)||0,
+    parseInt(document.getElementById('avC').value)||0
+  ];
+  const work = [...avail];
+  const finish = [false,false,false];
+  const seq = [];
+  let changed = true;
+  while(changed) {
+    changed = false;
+    for(let i=0;i<n;i++) {
+      if(!finish[i]) {
+        let canRun = true;
+        for(let j=0;j<r;j++) { if(need[i][j]>work[j]){canRun=false;break;} }
+        if(canRun) {
+          for(let j=0;j<r;j++) work[j]+=alloc[i][j];
+          finish[i]=true; seq.push(`P${i}`); changed=true;
+        }
+      }
+    }
+  }
+  const safe = finish.every(f=>f);
+  const resultEl = document.getElementById('bankerResult');
+  if(safe) {
+    resultEl.innerHTML = `<div class="safe-badge safe">✓ SAFE STATE — Sequence: ${seq.join(' → ')}</div>
+      <div class="calc-result" style="margin-top:8px">Safe sequence found: ${seq.join(' → ')}\n\nAll ${n} processes can complete.</div>`;
+  } else {
+    const blocked = finish.map((f,i)=>f?null:`P${i}`).filter(Boolean);
+    resultEl.innerHTML = `<div class="safe-badge unsafe">✗ UNSAFE STATE — Possible Deadlock</div>
+      <div class="calc-result" style="margin-top:8px">Blocked processes: ${blocked.join(', ')}\nPartial sequence: ${seq.length?seq.join(' → '):'none'}</div>`;
+  }
+}
+
+// init need
+[0,1,2].forEach(updateNeed);
+
+// ═══════════════════════════════════════════
+// QUIZ
+// ═══════════════════════════════════════════
+const questions = [
+  {q:"A disk rotates at 7200 RPM. What is the average rotational latency?", opts:["8.33 ms","4.17 ms","2.08 ms","16.67 ms"], ans:1, exp:"Time per rotation = 60/7200 = 8.33 ms. Average = 8.33/2 = 4.17 ms (on average the sector is halfway around)."},
+  {q:"Which disk scheduling algorithm may cause starvation of distant requests?", opts:["FCFS","SCAN","SSTF","C-LOOK"], ans:2, exp:"SSTF always picks the closest request, so distant requests can wait indefinitely — similar to SJF starvation in CPU scheduling."},
+  {q:"What is the capacity of a disk with 4 platters, 2 surfaces each, 1000 tracks/surface, 200 sectors/track, 512 bytes/sector?", opts:["819,200,000 bytes","1,638,400,000 bytes","409,600,000 bytes","3,276,800,000 bytes"], ans:0, exp:"4×2×1000×200×512 = 819,200,000 bytes. Total surfaces=8, total sectors=8×1000×200=1,600,000, ×512=819,200,000."},
+  {q:"In paging, if virtual address = 3000 and page size = 1024 bytes, what is the offset?", opts:["2","952","3","1024"], ans:1, exp:"Offset = 3000 mod 1024 = 952. Page number = 3000 ÷ 1024 = 2 (integer division)."},
+  {q:"What does a valid bit of 0 in a page table entry indicate?", opts:["Page is in RAM","Page is dirty","Page is NOT in RAM — access causes page fault","Page is read-only"], ans:2, exp:"Valid bit = 0 means the page is not currently in physical memory. Accessing it triggers a page fault, causing the OS to load it from disk."},
+  {q:"In EMAT calculation, memory access = 100ns, TLB hit ratio = 90%, no TLB overhead. What is EMAT?", opts:["100 ns","110 ns","120 ns","190 ns"], ans:2, exp:"EMAT = 0.9×100 + 0.1×200 = 90+20 = 120 ns. TLB hit: 1 access. Miss: 2 accesses (page table + data)."},
+  {q:"Which Coffman condition is broken by 'requiring a process to request all resources before starting'?", opts:["Mutual Exclusion","Hold and Wait","No Preemption","Circular Wait"], ans:1, exp:"Requiring all-at-once request breaks Hold and Wait — the process doesn't hold any resource while waiting for others."},
+  {q:"In the Banker's algorithm, Need = ?", opts:["Max + Allocation","Max - Allocation","Allocation - Max","Available - Max"], ans:1, exp:"Need[i][j] = Max[i][j] - Allocation[i][j]. It represents how many more resources process i may still request."},
+  {q:"What is the main advantage of multi-level paging over single-level paging?", opts:["Faster translation","Eliminates TLB need","Reduces page table memory for sparse address spaces","Prevents page faults"], ans:2, exp:"For sparse address spaces (most of VA unused), multi-level paging only creates inner tables for regions actually in use. A flat 32-bit table needs 4MB per process even if only a few pages are used."},
+  {q:"What happens during a TLB miss?", opts:["Process is terminated","OS handles it via interrupt","CPU accesses page table in main memory, uses 2 memory accesses total","Cache is flushed"], ans:2, exp:"On TLB miss, hardware accesses the page table in main memory (1st access) to find the frame number, then accesses the actual data (2nd access). Entry is loaded into TLB for future use."},
+  {q:"In SCAN algorithm, after reaching the last track, the head:", opts:["Jumps back to track 0","Reverses direction and services requests going back","Stops","Jumps to the next request"], ans:1, exp:"SCAN (elevator algorithm): head sweeps one way, reverses at the end of the disk, and services requests going back. This is unlike LOOK which stops at the last request."},
+  {q:"What is external fragmentation?", opts:["Unused space inside a page","Unused space inside a partition","Free memory exists but not contiguously — can't satisfy request","Page table is too large"], ans:2, exp:"External fragmentation: total free memory is enough, but it's scattered in non-contiguous chunks. A large contiguous allocation fails even though total free space is sufficient. Segmentation suffers from this; paging does not."},
+  {q:"In base-and-bounds, if Base=5000, Bound=2000, and logical address=2100, what happens?", opts:["PA = 7100","PA = 5000","TRAP — illegal access","PA = 2100"], ans:2, exp:"Valid range: 0 ≤ logical address < 2000. Since 2100 ≥ 2000 (bound), this is out of range — hardware raises a protection trap."},
+  {q:"Which algorithm provides more uniform wait time than SCAN?", opts:["FCFS","SSTF","C-SCAN","LOOK"], ans:2, exp:"C-SCAN services requests in one direction only, then jumps back to the start without servicing on the return trip. This makes wait time more uniform than SCAN, where requests at one end always wait longer."},
+  {q:"In a two-level page table with 36-bit VA, 8KB pages, and 10 L1 bits, how many L2 index bits are there?", opts:["10","12","13","16"], ans:2, exp:"Offset bits = log₂(8KB) = 13. L2 bits = 36 - 10 - 13 = 13 bits."},
+  {q:"A deadlock requires ALL four Coffman conditions to hold simultaneously. If you break just one:", opts:["Deadlock is delayed but not prevented","System becomes slower","Deadlock cannot occur","Need all four to be broken"], ans:2, exp:"All four must hold simultaneously. Breaking even ONE condition is sufficient to prevent deadlock. This is the basis of deadlock prevention strategies."},
+  {q:"In the Banker's algorithm, a 'safe state' means:", opts:["No process is waiting","Available > all allocations","There exists a sequence in which all processes can finish","The system has no deadlock right now"], ans:2, exp:"Safe state: there exists at least one safe sequence where each process can get its maximum resources, complete, and release them. An unsafe state doesn't mean deadlock is guaranteed, but it can't be avoided."},
+  {q:"Worst-case rotational latency occurs when:", opts:["Sector is at the opposite side from the head","Sector just passed the head","Disk speed is at minimum","Head is at track 0"], ans:1, exp:"Worst case: the desired sector just passed the read/write head, so you must wait a FULL rotation (not half). Worst-case latency = 60/RPM × 1000 ms."},
+  {q:"What does PTBR stand for and what does it store?", opts:["Page Table Bounds Register — stores page table size","Page-Table Base Register — stores the physical address of the current process's page table","Process Table Base Register — stores PCB pointer","Physical Translation Base Register — stores frame number"], ans:1, exp:"PTBR = Page-Table Base Register. It points to the starting physical address of the currently running process's page table. Changed on every context switch."},
+  {q:"Which of these is NOT a method of deadlock handling?", opts:["Prevention (break a Coffman condition)","Avoidance (Banker's algorithm)","Allocation (give all resources at once)","Detection and recovery"], ans:2, exp:"The four deadlock handling methods are: Prevention, Avoidance, Detection, and Recovery. 'Allocation' is not a standard method — it could overlap with prevention (pre-allocating all resources relates to 'Hold and Wait' prevention)."},
+];
+
+let currentQ = 0, score = 0, answered = [];
+
+function initQuiz() {
+  currentQ = 0; score = 0; answered = new Array(questions.length).fill(null);
+  showQuestion();
+}
+
+function showQuestion() {
+  const q = questions[currentQ];
+  document.getElementById('quizCounter').textContent = `${currentQ+1} / ${questions.length}`;
+  document.getElementById('qProgress').style.width = `${((currentQ+1)/questions.length)*100}%`;
+  document.getElementById('quizScore').textContent = score;
+  document.getElementById('quizQ').textContent = q.q;
+  const opts = document.getElementById('quizOpts');
+  opts.innerHTML = q.opts.map((o,i) => `
+    <div class="quiz-option ${answered[currentQ]!==null?'locked':''} ${answered[currentQ]===i?(i===q.ans?'correct':'wrong'):''}
+      ${answered[currentQ]!==null&&i===q.ans&&answered[currentQ]!==i?'correct':''}"
+      onclick="${answered[currentQ]===null?`answerQ(${i})`:''}">
+      <div class="opt-letter">${'ABCD'[i]}</div>
+      ${o}
+    </div>`).join('');
+  const exp = document.getElementById('quizExp');
+  if (answered[currentQ] !== null) {
+    exp.textContent = '💡 ' + q.exp;
+    exp.classList.add('show');
+  } else {
+    exp.classList.remove('show');
+  }
+  document.getElementById('prevBtn').style.display = currentQ>0?'inline-block':'none';
+  document.getElementById('nextBtn').style.display = answered[currentQ]!==null?'inline-block':'none';
+  document.getElementById('nextBtn').textContent = currentQ<questions.length-1?'Next →':'Finish';
+}
+
+function answerQ(idx) {
+  if (answered[currentQ] !== null) return;
+  answered[currentQ] = idx;
+  if (idx === questions[currentQ].ans) score++;
+  showQuestion();
+}
+
+function quizNext() {
+  if (currentQ < questions.length-1) { currentQ++; showQuestion(); }
+  else {
+    document.getElementById('quizCard').innerHTML = `
+      <div style="text-align:center;padding:20px">
+        <div style="font-family:var(--display);font-size:48px;font-weight:800;color:var(--accent)">${score}/${questions.length}</div>
+        <div style="font-family:var(--display);font-size:22px;margin:12px 0;color:var(--text)">${score>=16?'Excellent! 🎉':score>=12?'Good work! 💪':score>=8?'Keep studying 📚':'Need more review 🔄'}</div>
+        <div style="color:var(--text2);margin-bottom:24px">${Math.round(score/questions.length*100)}% correct across all topics</div>
+        <button class="btn btn-primary" onclick="initQuiz()">Retake Quiz</button>
+        <button class="btn btn-ghost" style="margin-left:8px" onclick="setMode('study')">Back to Notes</button>
+      </div>`;
+  }
+}
+
+function quizPrev() {
+  if (currentQ > 0) { currentQ--; showQuestion(); }
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+window.addEventListener('resize', () => {
+  const canvas = document.getElementById('diskCanvas');
+  if (canvas) { canvas.width = 0; }
+});
+
+// auto-open first collapsible in deadlock section
+document.querySelectorAll('.collapsible-header.open').forEach(h => {
+  h.nextElementSibling.classList.add('open');
+});
+</script>
+</body>
+</html>
